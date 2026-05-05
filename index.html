@@ -1140,4 +1140,17 @@ function loadSavedData() {
 </script>
 
 <!-- 本部管理モーダル -->
-<div class="modal-overlay"
+<div class="modal-overlay" id="modal-admin">
+  <div class="modal">
+    <div class="modal-title" id="admin-modal-title"></div>
+    <div id="admin-modal-body"></div>
+    <div class="modal-footer">
+      <span class="save-status" id="admin-save-status"></span>
+      <button class="btn btn-ghost" onclick="closeModal('modal-admin')">キャンセル</button>
+      <button class="btn btn-primary" onclick="submitAdminForm()">保存する</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
