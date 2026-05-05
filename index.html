@@ -432,9 +432,7 @@
     <div class="modal-section">📋 基本情報</div>
     <div class="form-group">
       <label class="form-label">スタッフ</label>
-      <select class="form-input" id="fb-staff">
-        <option>久保園 楓</option><option>佐々木 麻友</option><option>山中 菜々子</option>
-      </select>
+      <select class="form-input" id="fb-staff"></select>
     </div>
     <div class="form-row">
       <div class="form-group" style="flex:1"><label class="form-label">練習日</label><input class="form-input" type="date" id="fb-date"></div>
@@ -786,10 +784,14 @@ function renderFbStepOptions() {
 }
 
 function openFeedbackModal() {
+  // スタッフ一覧を常に最新のSTAFFから生成
+  const sel = document.getElementById('fb-staff');
+  sel.innerHTML = STAFF.map(s => `<option value="${s.name}">${s.avatar} ${s.name}</option>`).join('');
+  // 現在表示中のスタッフを自動選択
+  if (STAFF[currentStaffIndex]) sel.value = STAFF[currentStaffIndex].name;
   document.getElementById('modal-feedback').classList.add('open');
   document.getElementById('fb-save-status').textContent = '';
   document.getElementById('fb-submit-btn').disabled = false;
-  document.getElementById('fb-staff').value = STAFF[currentStaffIndex].name;
   selectedPhotos = [];
   renderPhotoPreview();
 }
@@ -808,9 +810,10 @@ async function submitFeedback() {
     date: document.getElementById('fb-date').value,
     skill: sk.icon + ' ' + sk.label,
     step: document.getElementById('fb-step').value,
+    duration: document.getElementById('fb-duration').value,
     rating: document.getElementById('fb-rating').value,
     comment: document.getElementById('fb-comment').value,
-    next: document.getElementById('fb-next').value,
+    nextPoint: document.getElementById('fb-next').value,
     recorder: document.getElementById('fb-recorder').value || '—',
     selfComment: document.getElementById('fb-self-comment').value,
     photos: selectedPhotos.map(p => p.dataUrl),
@@ -818,7 +821,13 @@ async function submitFeedback() {
 
   try {
     if (gasUrl) {
-      const res = await fetch(gasUrl, { method:'POST', body:JSON.stringify({ action:'saveFeedback', staffName, ...record }) });
+      const res = await fetch(gasUrl, { method:'POST', body:JSON.stringify({
+        action:'saveFeedback', staffName,
+        skill: record.skill, step: record.step, duration: record.duration,
+        rating: record.rating, comment: record.comment, nextPoint: record.nextPoint,
+        recorder: record.recorder, selfComment: record.selfComment,
+        photos: record.photos
+      }) });
       if (!res.ok) throw new Error('network error');
     }
     if (!DEMO_HISTORY[staffName]) DEMO_HISTORY[staffName] = [];
@@ -1131,17 +1140,4 @@ function loadSavedData() {
 </script>
 
 <!-- 本部管理モーダル -->
-<div class="modal-overlay" id="modal-admin">
-  <div class="modal">
-    <div class="modal-title" id="admin-modal-title"></div>
-    <div id="admin-modal-body"></div>
-    <div class="modal-footer">
-      <span class="save-status" id="admin-save-status"></span>
-      <button class="btn btn-ghost" onclick="closeModal('modal-admin')">キャンセル</button>
-      <button class="btn btn-primary" onclick="submitAdminForm()">保存する</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+<div class="modal-overlay"
