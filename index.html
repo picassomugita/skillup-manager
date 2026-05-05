@@ -265,7 +265,7 @@
           <div class="page-title">全体概要</div>
           <div class="page-subtitle">スタッフ全員のスキル達成率</div>
         </div>
-        <button class="btn btn-ghost" onclick="renderOverview()">🔄 更新</button>
+        <button class="btn btn-ghost" onclick="refreshAll()">🔄 更新</button>
       </div>
       <div class="stats-row">
         <div class="stat-card"><div class="stat-label">スタッフ数</div><div class="stat-value blue">3</div><div class="stat-sub">名</div></div>
@@ -557,6 +557,17 @@ function calcOverallPct(staffIdx) {
 }
 
 // ===== OVERVIEW =====
+async function refreshAll() {
+  const btn = document.querySelector('[onclick="refreshAll()"]');
+  if (btn) { btn.textContent = '読み込み中...'; btn.disabled = true; }
+  await loadStaffFromGas();
+  rebuildSidebar();
+  renderOverview();
+  renderAdminPage();
+  renderFbStepOptions();
+  if (btn) { btn.textContent = '🔄 更新'; btn.disabled = false; }
+}
+
 function renderOverview() {
   const done = STAFF.filter(s=>s.todayDone).length;
   document.getElementById('stat-done').textContent = done;
@@ -1151,4 +1162,17 @@ function loadSavedData() {
 </script>
 
 <!-- 本部管理モーダル -->
-<div class="modal-
+<div class="modal-overlay" id="modal-admin">
+  <div class="modal">
+    <div class="modal-title" id="admin-modal-title"></div>
+    <div id="admin-modal-body"></div>
+    <div class="modal-footer">
+      <span class="save-status" id="admin-save-status"></span>
+      <button class="btn btn-ghost" onclick="closeModal('modal-admin')">キャンセル</button>
+      <button class="btn btn-primary" onclick="submitAdminForm()">保存する</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
