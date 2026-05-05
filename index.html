@@ -784,11 +784,22 @@ function renderFbStepOptions() {
 }
 
 function openFeedbackModal() {
-  // スタッフ一覧を常に最新のSTAFFから生成
+  // スタッフ一覧を常に最新のSTAFFから再生成
   const sel = document.getElementById('fb-staff');
   sel.innerHTML = STAFF.map(s => `<option value="${s.name}">${s.avatar} ${s.name}</option>`).join('');
   // 現在表示中のスタッフを自動選択
   if (STAFF[currentStaffIndex]) sel.value = STAFF[currentStaffIndex].name;
+
+  // 全フィールドをリセット
+  document.getElementById('fb-duration').value = '';
+  document.getElementById('fb-comment').value = '';
+  document.getElementById('fb-next').value = '';
+  document.getElementById('fb-recorder').value = '';
+  document.getElementById('fb-self-comment').value = '';
+  document.getElementById('fb-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('fb-skill').selectedIndex = 0;
+  renderFbStepOptions();
+
   document.getElementById('modal-feedback').classList.add('open');
   document.getElementById('fb-save-status').textContent = '';
   document.getElementById('fb-submit-btn').disabled = false;
@@ -1140,17 +1151,4 @@ function loadSavedData() {
 </script>
 
 <!-- 本部管理モーダル -->
-<div class="modal-overlay" id="modal-admin">
-  <div class="modal">
-    <div class="modal-title" id="admin-modal-title"></div>
-    <div id="admin-modal-body"></div>
-    <div class="modal-footer">
-      <span class="save-status" id="admin-save-status"></span>
-      <button class="btn btn-ghost" onclick="closeModal('modal-admin')">キャンセル</button>
-      <button class="btn btn-primary" onclick="submitAdminForm()">保存する</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+<div class="modal-
